@@ -39,12 +39,14 @@ defmodule CandyMartWeb.Router do
 		pipe_through [:browser, :protected, :admin_layout]
 
 		resources "/orders", OrderController
+    post "/import_csv", OrderController, :import_csv
 	end
 
   scope "/api", CandyMartWeb.Api, as: :api do
     pipe_through :api
 
     post "/sales", ApiController, :create_sale
+    
   end
 
   # Other scopes may use custom stacks.

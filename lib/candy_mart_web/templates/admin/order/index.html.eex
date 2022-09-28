@@ -1,8 +1,23 @@
 <section id="torch-toolbar">
   <div class="torch-container">
+
+    <%= form_for @conn, Routes.admin_order_path(@conn, :import_csv), [multipart: true], fn f -> %>
+      <%= file_input f, :file, accept: ".csv", required: true %>
+      <div>
+        <%= submit "Import CSV" %>
+      </div>
+    <% end %>
+  <div class="torch-container">
+
+</section>
+
+<section id="torch-toolbar">
+
+  <div class="torch-container">
     <%= link "New Order", to: Routes.admin_order_path(@conn, :new) %>
   </div>
-</section>
+  </section>
+
 <section id="torch-index-content">
   <div class="torch-container">
     <section id="torch-filters">

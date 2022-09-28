@@ -8,7 +8,9 @@ defmodule CandyMart.Orders do
   import Torch.Helpers, only: [sort: 1, paginate: 4]
   import Filtrex.Type.Config
 
+
   alias CandyMart.Orders.Order
+  alias NimbleCSV.RFC4180, as: CSV
 
   @pagination [page_size: 15]
   @pagination_distance 5
@@ -101,6 +103,7 @@ defmodule CandyMart.Orders do
 
   """
   def create_order(attrs \\ %{}) do
+    IO.inspect attrs, label: "create attrs"
     %Order{}
     |> Order.changeset(attrs)
     |> Repo.insert()
@@ -155,9 +158,52 @@ defmodule CandyMart.Orders do
 
   defp filter_config(:orders) do
     defconfig do
-      
+
     end
   end
 
+
+  def import(file) do
+    cols = get_column_names(file.path)
+
+    file.path
+    |> File.stream!()
+    |> CSV.parse_stream(skip_headers: true)
+    |> Enum.map(fn row ->
+      row
+      |> Enum.with_index()
+      |> Map.new(fn {val, num} -> {cols[num], val} end)
+      |> create_order
+        end)
+  end
+
+  # vals = file.path
+  # |> File.stream!()
+  # |> CSV.parse_stream(skip_headers: true)
+  # |> Enum.map(fn row ->
+  #   row
+  #   |> Enum.with_index()
+  #   |> Map.new(fn {val, num} -> {cols[num], val} end)
+  #     end)
+  # |> IO.inspect(label: "vals")
+
+  # vv = Enum.map(vals, fn attrs ->
+  # %Order{}
+  # |> Order.changeset(attrs)
+  # end)
+  # Repo.insert_all(Order, vv)
+
+
+
+  def get_column_names(file) do
+    file
+    |> File.stream!()
+    |> CSV.parse_stream(skip_headers: false)
+    |> Enum.fetch!(0)
+    |> Enum.with_index()
+    |> Map.new(fn {"product", num} -> {num, "product_name"}
+      {val, num} -> {num, val} end)
+    |> IO.inspect
+  end
 
 end

@@ -4,9 +4,9 @@ defmodule CandyMartWeb.Admin.OrderController do
   alias CandyMart.Orders
   alias CandyMart.Orders.Order
 
-  
+
 #  plug(:put_root_layout, {CandyMartWeb.LayoutView, "torch.html"})
-  
+
 
   def index(conn, params) do
     case Orders.paginate_orders(params) do
@@ -67,4 +67,16 @@ defmodule CandyMartWeb.Admin.OrderController do
     |> put_flash(:info, "Order deleted successfully.")
     |> redirect(to: Routes.admin_order_path(conn, :index))
   end
+
+  def import_csv(conn, %{"file" => file}) do
+IO.inspect file
+
+    file
+    |> Orders.import()
+
+    conn
+    |> put_flash(:info, "CSV file imported successfully")
+    |> redirect(to: Routes.admin_order_path(conn, :index))
+  end
+
 end
